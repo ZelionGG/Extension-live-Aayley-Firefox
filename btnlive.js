@@ -10,7 +10,7 @@ if (ff_module) {
     var setInter = window.setInterval;
 }
 
-var BtnLive = function(chaines, callback, interval, nbCheckOff) {
+var BtnLive = function (chaines, callback, interval, nbCheckOff) {
     if (!Array.isArray(chaines)) {
         chaines = [chaines];
     }
@@ -18,13 +18,13 @@ var BtnLive = function(chaines, callback, interval, nbCheckOff) {
     for (var i = 0; i < l; i++) {
         var chaine = chaines[i];
         if (!(
-            typeof(chaine) === "object" &&
-            ((
-                ("id" in chaine) && ("type" in chaine) && (chaine.type === "dailymotion" || chaine.type === "twitch" || chaine.type === "youtube")
-            ) || (
-                ('url' in chaine) && ('custom' in chaine)
-            ))
-           )) {
+                typeof (chaine) === "object" &&
+                ((
+                    ("id" in chaine) && ("type" in chaine) && chaine.type === "twitch"
+                ) || (
+                    ('url' in chaine) && ('custom' in chaine)
+                ))
+            )) {
             throw "error in object chaine definition";
         }
     }
@@ -38,30 +38,24 @@ var BtnLive = function(chaines, callback, interval, nbCheckOff) {
     if (interval > 0) {
         this.check();
         var self = this;
-        setInter(function() { self.check() }, interval);
+        setInter(function () {
+            self.check()
+        }, interval);
     }
 }
 
-BtnLive.prototype.__dailyParams = ["3d","access_error","ads","allow_comments","allow_embed","allowed_in_groups","allowed_in_playlists","aspect_ratio","audience","auto_record","available_formats","bookmarks_total","broadcasting","channel","cleeng_svod_offer_id","cleeng_tvod_offer_id","comments_total","country","created_time","description","duration","embed_html","embed_url","encoding_progress","end_time","event_delete","event_live_offair","event_live_onair","event_modify","explicit","filmstrip_small_url","genre","geoblocking","geoloc","id","isrc","language","live_frag_publish_url","live_publish_url","mediablocking","metadata_credit_actors","metadata_credit_director","metadata_genre","metadata_original_language","metadata_original_title","metadata_released","metadata_show_episode","metadata_show_season","metadata_visa","mode","moderated","modified_time","muyap","onair","owner","paywall","poster","poster_135x180_url","poster_180x240_url","poster_270x360_url","poster_360x480_url","poster_45x60_url","poster_90x120_url","poster_url","price_details","private","published","rating","ratings_total","recurrence","rental_duration","rental_price","rental_price_formatted","rental_start_time","sharing_urls","soundtrack_info","sources","start_time","status","strongtags","svod","swf_url","sync_allowed","tags","taken_time","thumbnail_120_url","thumbnail_180_url","thumbnail_240_url","thumbnail_360_url","thumbnail_480_url","thumbnail_60_url","thumbnail_720_url","thumbnail_url","title","tvod","type","upc","url","views_last_day","views_last_hour","views_last_month","views_last_week","views_total"];
+BtnLive.prototype.__dailyParams = ["3d", "access_error", "ads", "allow_comments", "allow_embed", "allowed_in_groups", "allowed_in_playlists", "aspect_ratio", "audience", "auto_record", "available_formats", "bookmarks_total", "broadcasting", "channel", "cleeng_svod_offer_id", "cleeng_tvod_offer_id", "comments_total", "country", "created_time", "description", "duration", "embed_html", "embed_url", "encoding_progress", "end_time", "event_delete", "event_live_offair", "event_live_onair", "event_modify", "explicit", "filmstrip_small_url", "genre", "geoblocking", "geoloc", "id", "isrc", "language", "live_frag_publish_url", "live_publish_url", "mediablocking", "metadata_credit_actors", "metadata_credit_director", "metadata_genre", "metadata_original_language", "metadata_original_title", "metadata_released", "metadata_show_episode", "metadata_show_season", "metadata_visa", "mode", "moderated", "modified_time", "muyap", "onair", "owner", "paywall", "poster", "poster_135x180_url", "poster_180x240_url", "poster_270x360_url", "poster_360x480_url", "poster_45x60_url", "poster_90x120_url", "poster_url", "price_details", "private", "published", "rating", "ratings_total", "recurrence", "rental_duration", "rental_price", "rental_price_formatted", "rental_start_time", "sharing_urls", "soundtrack_info", "sources", "start_time", "status", "strongtags", "svod", "swf_url", "sync_allowed", "tags", "taken_time", "thumbnail_120_url", "thumbnail_180_url", "thumbnail_240_url", "thumbnail_360_url", "thumbnail_480_url", "thumbnail_60_url", "thumbnail_720_url", "thumbnail_url", "title", "tvod", "type", "upc", "url", "views_last_day", "views_last_hour", "views_last_month", "views_last_week", "views_total"];
 BtnLive.prototype.__dailyLength = BtnLive.prototype.__dailyParams.length;
 
 BtnLive.prototype.__getUrl = function (id, type, key) {
     if (type === "twitch") {
         return "https://api.twitch.tv/kraken/streams/" + id;
-    } else if(type === "youtube") {
-        return "https://www.googleapis.com/youtube/v3/search?part=snippet&eventType=live&type=video&key=" + key + "&channelId=" + id + '&t=' + Date.now();
-    } else {
-        return "https://api.dailymotion.com/video/" + id + "?fields=onair,title," + this.__dailyParams[Math.floor(Math.random() * this.__dailyLength)] + "," + this.__dailyParams[Math.floor(Math.random() * this.__dailyLength)] + "," + this.__dailyParams[Math.floor(Math.random() * this.__dailyLength)];
     }
 }
 
 BtnLive.prototype.getDefaultUrl = function (id, type) {
     if (type === "twitch") {
         return "http://www.twitch.tv/" + id;
-    } else if (type === "youtube") {
-        return "https://gaming.youtube.com/watch?v=" + id;
-    } else {
-        return "http://www.dailymotion.com/video/" + id;
     }
 }
 
@@ -69,9 +63,9 @@ BtnLive.prototype.getCurrentRedirectUrl = function () {
     var chaine = this.currentChaine;
     if ("redirect" in chaine) {
         return chaine.redirect;
-    } else if ("videoId" in chaine){
+    } else if ("videoId" in chaine) {
         return this.getDefaultUrl(chaine.videoId, chaine.type);
-    } else if ("id" in chaine){
+    } else if ("id" in chaine) {
         return this.getDefaultUrl(chaine.id, chaine.type);
     } else {
         return null;
@@ -86,11 +80,11 @@ BtnLive.prototype.check = function () {
     }
 }
 
-BtnLive.prototype.__check = function(chaine) {
+BtnLive.prototype.__check = function (chaine) {
     var self = this;
     var url;
     if ("id" in chaine) {
-        var key = "AIzaSyA9SiPFacXy0nB4DDlbNIDvQ62N0CTM5vU";
+        var key = "w6k400q2dbmnv8u7ngueb18vp0vdpi";
         if ("key" in chaine) {
             key = chaine.key;
         }
@@ -98,7 +92,7 @@ BtnLive.prototype.__check = function(chaine) {
     } else {
         url = chaine.url;
     }
-    BtnLive.prototype.__get(url, chaine.type, function(data){
+    BtnLive.prototype.__get(url, chaine.type, function (data) {
         if ("custom" in chaine) {
             chaine.custom(data, chaine);
         } else {
@@ -117,7 +111,7 @@ BtnLive.prototype.__check = function(chaine) {
                 var online = chaine.type === 'dailymotion' ? data.onair : (data.stream != null && data.stream.channel.status.toLowerCase().indexOf('#secret') == -1);
                 if (online && 'filtre' in chaine) {
                     var titre = chaine.type === 'dailymotion' ? data.title : data.stream.channel.status;
-                    var r = new RegExp(chaine.filtre,"i");
+                    var r = new RegExp(chaine.filtre, "i");
                     online = r.test(titre);
                 }
                 self.__checkDone(online, chaine);
@@ -126,13 +120,14 @@ BtnLive.prototype.__check = function(chaine) {
     })
 }
 
-BtnLive.prototype.__get = function(url, type, callback) {
+BtnLive.prototype.__get = function (url, type, callback) {
     if (ff_module) {
         if (type == "twitch") {
             Request({
                 url: url,
                 headers: {
-                    'Client-ID': 'iinv27ywmtjl2trnievucce2zo7xav1'
+                    'Client-ID': '7sjt9diwcoz210sdkc9xkokrm8h2ol',
+                    'Accept': 'application/vnd.twitchtv.v5+json'
                 },
                 onComplete: function (response) {
                     if (response.json) {
@@ -155,37 +150,37 @@ BtnLive.prototype.__get = function(url, type, callback) {
             }).get();
         }
     } else {
-        var xhr; 
+        var xhr;
         try {
             xhr = new ActiveXObject('Msxml2.XMLHTTP');
-        } catch(e) {
+        } catch (e) {
             try {
                 xhr = new ActiveXObject('Microsoft.XMLHTTP');
             } catch (e2) {
                 xhr = new XMLHttpRequest();
             }
         }
-        xhr.onreadystatechange  = function() { 
-            if (xhr.readyState  == 4) {
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
                 responseText = xhr.responseText;
                 try {
-                   var json = JSON.parse(responseText);
-                   responseText = json;
-                } catch(e) {
-                }
+                    var json = JSON.parse(responseText);
+                    responseText = json;
+                } catch (e) {}
                 callback(responseText);
             }
-        }; 
-     
+        };
+
         xhr.open("GET", url, true);
         if (type == "twitch") {
-            xhr.setRequestHeader("Client-ID", "iinv27ywmtjl2trnievucce2zo7xav1");
+            xhr.setRequestHeader("Client-ID", "7sjt9diwcoz210sdkc9xkokrm8h2ol");
+            xhr.setRequestHeader("Accept", "application/vnd.twitchtv.v5+json");
         }
         xhr.send(null);
     }
 }
 
-BtnLive.prototype.__checkDone = function(result, chaine) {
+BtnLive.prototype.__checkDone = function (result, chaine) {
     if (this.__isON) return;
     this.__isON = result;
 
