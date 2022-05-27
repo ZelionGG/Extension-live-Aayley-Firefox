@@ -20,7 +20,7 @@ var BtnLive = function (chaines, callback, interval, nbCheckOff) {
         if (!(
                 typeof (chaine) === "object" &&
                 ((
-                    ("id" in chaine) && ("type" in chaine) && chaine.type === "twitch"
+                    ("id" in chaine) && ("type" in chaine) && (chaine.type === "twitch")
                 ) || (
                     ('url' in chaine) && ('custom' in chaine)
                 ))
@@ -47,16 +47,12 @@ var BtnLive = function (chaines, callback, interval, nbCheckOff) {
 BtnLive.prototype.__dailyParams = ["3d", "access_error", "ads", "allow_comments", "allow_embed", "allowed_in_groups", "allowed_in_playlists", "aspect_ratio", "audience", "auto_record", "available_formats", "bookmarks_total", "broadcasting", "channel", "cleeng_svod_offer_id", "cleeng_tvod_offer_id", "comments_total", "country", "created_time", "description", "duration", "embed_html", "embed_url", "encoding_progress", "end_time", "event_delete", "event_live_offair", "event_live_onair", "event_modify", "explicit", "filmstrip_small_url", "genre", "geoblocking", "geoloc", "id", "isrc", "language", "live_frag_publish_url", "live_publish_url", "mediablocking", "metadata_credit_actors", "metadata_credit_director", "metadata_genre", "metadata_original_language", "metadata_original_title", "metadata_released", "metadata_show_episode", "metadata_show_season", "metadata_visa", "mode", "moderated", "modified_time", "muyap", "onair", "owner", "paywall", "poster", "poster_135x180_url", "poster_180x240_url", "poster_270x360_url", "poster_360x480_url", "poster_45x60_url", "poster_90x120_url", "poster_url", "price_details", "private", "published", "rating", "ratings_total", "recurrence", "rental_duration", "rental_price", "rental_price_formatted", "rental_start_time", "sharing_urls", "soundtrack_info", "sources", "start_time", "status", "strongtags", "svod", "swf_url", "sync_allowed", "tags", "taken_time", "thumbnail_120_url", "thumbnail_180_url", "thumbnail_240_url", "thumbnail_360_url", "thumbnail_480_url", "thumbnail_60_url", "thumbnail_720_url", "thumbnail_url", "title", "tvod", "type", "upc", "url", "views_last_day", "views_last_hour", "views_last_month", "views_last_week", "views_total"];
 BtnLive.prototype.__dailyLength = BtnLive.prototype.__dailyParams.length;
 
-BtnLive.prototype.__getUrl = function (id, type, key) {
-    if (type === "twitch") {
-        return "https://api.twitch.tv/kraken/streams/" + id;
-    }
+BtnLive.prototype.__getUrl = function () {
+    return "https://twitch.theorycraft.gg/channel-status";
 }
 
-BtnLive.prototype.getDefaultUrl = function (id, type) {
-    if (type === "twitch") {
-        return "http://www.twitch.tv/" + id;
-    }
+BtnLive.prototype.getDefaultUrl = function (id) {
+    return "http://www.twitch.tv/" + id;
 }
 
 BtnLive.prototype.getCurrentRedirectUrl = function () {
@@ -64,9 +60,9 @@ BtnLive.prototype.getCurrentRedirectUrl = function () {
     if ("redirect" in chaine) {
         return chaine.redirect;
     } else if ("videoId" in chaine) {
-        return this.getDefaultUrl(chaine.videoId, chaine.type);
+        return this.getDefaultUrl(chaine.videoId);
     } else if ("id" in chaine) {
-        return this.getDefaultUrl(chaine.id, chaine.type);
+        return this.getDefaultUrl(chaine.id);
     } else {
         return null;
     }
@@ -88,96 +84,62 @@ BtnLive.prototype.__check = function (chaine) {
         if ("key" in chaine) {
             key = chaine.key;
         }
-        url = this.__getUrl(chaine.id, chaine.type, key);
+        url = this.__getUrl(chaine.id, key);
     } else {
         url = chaine.url;
     }
-    BtnLive.prototype.__get(url, chaine.type, function (data) {
+
+    BtnLive.prototype.__get(url, function (data) {
         if ("custom" in chaine) {
             chaine.custom(data, chaine);
         } else {
-            if (chaine.type === "youtube") {
-                var count = data.items.length;
-                var online = false;
-                for (var i = 0; i < count; i++) {
-                    var datum = data.items[i];
-                    if (datum['snippet'] !== undefined && datum['snippet']['liveBroadcastContent'] === "live") {
-                        online = true;
-                        chaine.videoId = datum['id']['videoId']
-                    }
-                }
-                self.__checkDone(online, chaine);
-            } else {
-                var online = chaine.type === 'dailymotion' ? data.onair : (data.stream != null && data.stream.channel.status.toLowerCase().indexOf('#secret') == -1);
-                if (online && 'filtre' in chaine) {
-                    var titre = chaine.type === 'dailymotion' ? data.title : data.stream.channel.status;
-                    var r = new RegExp(chaine.filtre, "i");
-                    online = r.test(titre);
-                }
-                self.__checkDone(online, chaine);
+            console.log(data[chaine.id]);
+            var online = (data[chaine.id] !== undefined && data[chaine.id] != null);
+            if (online && 'filtre' in chaine) {
+                var titre = data[chaine.id].title;
+                var r = new RegExp(chaine.filtre, "i");
+                online = r.test(titre);
             }
+            self.__checkDone(online, chaine);
         }
     })
 }
 
-BtnLive.prototype.__get = function (url, type, callback) {
-    if (ff_module) {
-        if (type == "twitch") {
-            Request({
-                url: url,
-                headers: {
-                    'Client-ID': '7sjt9diwcoz210sdkc9xkokrm8h2ol',
-                    'Accept': 'application/vnd.twitchtv.v5+json'
-                },
-                onComplete: function (response) {
-                    if (response.json) {
-                        callback(response.json);
-                    } else {
-                        callback(response.text);
-                    }
-                }
-            }).get();
-        } else {
-            Request({
-                url: url,
-                onComplete: function (response) {
-                    if (response.json) {
-                        callback(response.json);
-                    } else {
-                        callback(response.text);
-                    }
-                }
-            }).get();
-        }
-    } else {
-        var xhr;
-        try {
-            xhr = new ActiveXObject('Msxml2.XMLHTTP');
-        } catch (e) {
-            try {
-                xhr = new ActiveXObject('Microsoft.XMLHTTP');
-            } catch (e2) {
-                xhr = new XMLHttpRequest();
-            }
-        }
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4) {
-                responseText = xhr.responseText;
-                try {
-                    var json = JSON.parse(responseText);
-                    responseText = json;
-                } catch (e) {}
-                callback(responseText);
-            }
-        };
+BtnLive.prototype.__get = function (url, callback) {
+    var data = JSON.stringify({
+        "channels": [
+            aayley_params.chaines[0].id
+        ]
+    });
 
-        xhr.open("GET", url, true);
-        if (type == "twitch") {
-            xhr.setRequestHeader("Client-ID", "7sjt9diwcoz210sdkc9xkokrm8h2ol");
-            xhr.setRequestHeader("Accept", "application/vnd.twitchtv.v5+json");
+    var xhr;
+    try {
+        xhr = new ActiveXObject('Msxml2.XMLHTTP');
+    } catch (e) {
+        try {
+            xhr = new ActiveXObject('Microsoft.XMLHTTP');
+        } catch (e2) {
+            xhr = new XMLHttpRequest();
         }
-        xhr.send(null);
     }
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+            responseText = xhr.responseText;
+            try {
+                var json = JSON.parse(responseText);
+                responseText = json;
+            } catch (e) {}
+            callback(responseText);
+        }
+    };
+
+    xhr.open("POST", url);
+
+    xhr.setRequestHeader("Client-ID", "7sjt9diwcoz210sdkc9xkokrm8h2ol");
+    xhr.setRequestHeader("Accept", "application/vnd.twitchtv.v5+json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.send(data);
 }
 
 BtnLive.prototype.__checkDone = function (result, chaine) {

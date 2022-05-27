@@ -1,10 +1,10 @@
-var aayleyonline_nav = {
+var aayley_nav = {
     doNotification: function () {
-        browser.notifications.clear('notifyON' + aayleyonline_params.title, function (id) {});
-        browser.notifications.create('notifyON' + aayleyonline_params.title, {
+        browser.notifications.clear('notifyON' + aayley_params.title, function (id) {});
+        browser.notifications.create('notifyON' + aayley_params.title, {
             type: "basic",
-            title: aayleyonline_params.title,
-            message: aayleyonline_params.message,
+            title: aayley_params.title,
+            message: aayley_params.message,
             iconUrl: "iconon128.png"
         }, function (id) {});
     },
@@ -15,31 +15,31 @@ var aayleyonline_nav = {
         });
     },
     goIt: function () {
-        if (aayleyonline.isON) {
+        if (aayley.isON) {
             browser.tabs.create({
-                url: aayleyonline.getCurrentRedirectUrl()
+                url: aayley.getCurrentRedirectUrl()
             }, function (tab) {});
         } else {
             browser.tabs.create({
-                url: aayleyonline_params.offlineUrl
+                url: aayley_params.offlineUrl
             }, function (tab) {});
         }
     }
 }
 
-browser.browserAction.onClicked.addListener(aayleyonline_nav.goIt);
+browser.browserAction.onClicked.addListener(aayley_nav.goIt);
 browser.notifications.onClicked.addListener(function (notificationId) {
-    if (notificationId === 'notifyON' + aayleyonline_params.title) {
+    if (notificationId === 'notifyON' + aayley_params.title) {
         browser.tabs.create({
-            url: aayleyonline.getCurrentRedirectUrl()
+            url: aayley.getCurrentRedirectUrl()
         }, function (tab) {});
     }
 });
 
-aayleyonline_nav.setIconON(false);
-var aayleyonline = new BtnLive(aayleyonline_params.chaines, function (result) {
-    aayleyonline_nav.setIconON(result);
+aayley_nav.setIconON(false);
+var aayley = new BtnLive(aayley_params.chaines, function (result) {
+    aayley_nav.setIconON(result);
     if (result) {
-        aayleyonline_nav.doNotification();
+        aayley_nav.doNotification();
     }
 }, 60000, 2);

@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Aayley",
     "description": "Soyez au courant quand Aayley commence à streamer !",
-    "version": "2.5.0",
+    "version": "3.0.0",
     "background": {
         "scripts": [
             "parameters.js",
@@ -11,7 +11,7 @@
         ]
     },
     "permissions": [
-        "https://api.twitch.tv/",
+        "https://twitch.theorycraft.gg/",
         "notifications"
     ],
     "browser_action": {
