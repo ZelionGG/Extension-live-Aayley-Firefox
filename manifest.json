@@ -1,25 +1,32 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
     "name": "Aayley",
     "description": "Soyez au courant quand Aayley commence à streamer !",
-    "version": "3.0.0",
+    "version": "4.0.0",
+    "action": {
+        "default_icon": {
+            "16": "images/iconoff16.png",
+            "48": "images/iconoff48.png",
+            "128": "images/iconoff128.png"
+        }
+    },
     "background": {
         "scripts": [
-            "parameters.js",
-            "btnlive.js",
-            "firefox.js"
+          "bg_worker.js"
         ]
-    },
+      },
     "permissions": [
-        "https://twitch.theorycraft.gg/",
+        "alarms",
         "notifications"
     ],
-    "browser_action": {
-        "default_icon": "logo_clean_128.png"
-    },
     "icons": {
-        "16": "logo_clean_16.png",
-        "48": "logo_clean_48.png",
-        "128": "logo_clean_128.png"
-    }
+        "16": "images/logo_clean_16.png",
+        "48": "images/logo_clean_48.png",
+        "128": "images/logo_clean_128.png"
+    },
+    "browser_specific_settings": {
+        "gecko": {
+          "id": "{a8d16a8a-7359-428d-afc7-8c7bc5806cba}"
+        }
+      }
 }
