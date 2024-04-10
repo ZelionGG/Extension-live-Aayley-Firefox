@@ -34,14 +34,14 @@ async function getTwitchStatus() {
         const data = await response.json();
         const streamData = data.data[0];
         if (streamData && streamData.type === 'live') {
-            if (this.notification != true)
+            if (sessionStorage.getItem("notification") !== "true")
                 browser.notifications.create('notifyON Aayley', { type: "basic", title: 'Aayley', message: 'Aayley est en live', iconUrl: "images/iconon128.png" }, function (id) { });
 
-            this.notification = true;
+            sessionStorage.setItem("notification", "true");
             browser.action.setIcon({ path: "images/iconon48.png" });
             return true;
         } else {
-            this.notification = false;
+            sessionStorage.setItem("notification", "false");
             browser.action.setIcon({ path: "images/iconoff48.png" });
         }
     } catch (error) {
@@ -70,9 +70,9 @@ async function getTwitchToken() {
     getLiveStatus();
 }
 
-browser.notifications.onClicked.addListener(function(notificationId){
+browser.notifications.onClicked.addListener(function (notificationId) {
     if (notificationId === 'notifyON Aayley') {
-        browser.tabs.create({url:url},function(tab){});
+        browser.tabs.create({ url: url }, function (tab) { });
     }
 });
 
