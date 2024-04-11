@@ -1,32 +1,29 @@
 {
-    "manifest_version": 3,
-    "name": "Aayley",
-    "description": "Soyez au courant quand Aayley commence à streamer !",
-    "version": "4.0.0",
-    "action": {
-        "default_icon": {
-            "16": "images/iconoff16.png",
-            "48": "images/iconoff48.png",
-            "128": "images/iconoff128.png"
-        }
-    },
-    "background": {
-        "scripts": [
-          "bg_worker.js"
-        ]
-      },
-    "permissions": [
-        "alarms",
-        "notifications"
-    ],
-    "icons": {
-        "16": "images/logo_clean_16.png",
-        "48": "images/logo_clean_48.png",
-        "128": "images/logo_clean_128.png"
-    },
-    "browser_specific_settings": {
-        "gecko": {
-          "id": "{a8d16a8a-7359-428d-afc7-8c7bc5806cba}"
-        }
-      }
+  "manifest_version": 2,
+  "name": "Aayley",
+  "description": "Soyez au courant quand Aayley commence à streamer !",
+  "version": "3.1.0",
+  "background": {
+    "scripts": [
+      "bg_worker.js"
+    ]
+  },
+  "permissions": [
+    "https://twitch.theorycraft.gg/",
+    "notifications",
+    "alarms"
+  ],
+  "browser_action": {
+    "default_icon": "images/logo_clean_128.png"
+  },
+  "icons": {
+    "16": "images/logo_clean_16.png",
+    "48": "images/logo_clean_48.png",
+    "128": "images/logo_clean_128.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{a8d16a8a-7359-428d-afc7-8c7bc5806cba}"
+    }
+  }
 }
